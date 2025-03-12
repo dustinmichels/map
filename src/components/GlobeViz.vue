@@ -25,6 +25,7 @@ interface GeoJSON {
 const globeContainer = ref<HTMLElement | null>(null)
 let globeInstance: any = null
 const hoveredCountry = ref<string | null>(null)
+const isLoading = ref(true) // Add loading state
 
 // Create the resize handler outside the onMounted hook
 const handleResize = () => {
@@ -49,6 +50,7 @@ onMounted(async () => {
 
   if (!globeContainer.value) {
     console.error('Globe container not found')
+    isLoading.value = false // Stop loading if container not found
     return
   }
 
@@ -121,18 +123,40 @@ onMounted(async () => {
     // Make the globe responsive
     window.addEventListener('resize', handleResize)
 
+    // Add a small delay to ensure the globe is fully rendered
+    setTimeout(() => {
+      isLoading.value = false // Hide loading animation
+    }, 1000)
+
     console.log('Globe initialized successfully')
   } catch (error) {
     console.error('Error initializing globe:', error)
+    isLoading.value = false // Stop loading on error
   }
 })
 </script>
 
 <template>
-  <div ref="globeContainer" class="globe-container"></div>
+  <div class="globe-wrapper">
+    <!-- Loading overlay with spinner -->
+    <div v-if="isLoading" class="loading-overlay">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading Globe...</div>
+    </div>
+
+    <!-- Globe container -->
+    <div ref="globeContainer" class="globe-container"></div>
+  </div>
 </template>
 
 <style scoped>
+.globe-wrapper {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
 .globe-container {
   width: 100%;
   height: 100vh;
@@ -142,5 +166,43 @@ onMounted(async () => {
   margin: 0;
   padding: 0;
   display: block;
+}
+
+/* Loading overlay styling */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-text {
+  color: white;
+  margin-top: 16px;
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+}
+
+/* CSS Spinner */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ff8c00;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
