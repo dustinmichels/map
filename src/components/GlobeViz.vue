@@ -72,28 +72,28 @@ onMounted(async () => {
       .height(window.innerHeight)
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
       .polygonsData(countries.features)
-      .polygonCapColor((d: Feature) => {
+      .polygonCapColor((d: any) => {
         // Change color when hovered
-        return d.properties.ISO_A2 === hoveredCountry.value
+        return d.properties?.ISO_A2 === hoveredCountry.value
           ? '#FF8C00'
           : '#888888'
       })
-      .polygonSideColor((d: Feature) => {
+      .polygonSideColor((d: any) => {
         // Change side color when hovered
-        return d.properties.ISO_A2 === hoveredCountry.value
+        return d.properties?.ISO_A2 === hoveredCountry.value
           ? '#E47200'
           : '#666666'
       })
       .polygonStrokeColor(() => '#FFFFFF') // White borders between countries
-      .polygonAltitude((d: Feature) => {
+      .polygonAltitude((d: any) => {
         // Slightly elevate the hovered country
-        return d.properties.ISO_A2 === hoveredCountry.value ? 0.02 : 0.01
+        return d.properties?.ISO_A2 === hoveredCountry.value ? 0.02 : 0.01
       })
       .polygonLabel((obj: any) => {
         const d = obj.properties
-        return `<b>${d.ADMIN}</b>`
+        return `<b>${d.ADMIN} (${d.ISO_A2})</b>`
       })
-      .onPolygonHover((polygon: Feature | null) => {
+      .onPolygonHover((polygon: any) => {
         // Update the hovered country and re-render the globe
         if (polygon) {
           hoveredCountry.value = polygon.properties.ISO_A2
@@ -103,14 +103,18 @@ onMounted(async () => {
 
         // Force update polygon colors
         globeInstance
-          .polygonCapColor((d: Feature) =>
-            d.properties.ISO_A2 === hoveredCountry.value ? '#FF8C00' : '#888888'
+          .polygonCapColor((d: any) =>
+            d.properties?.ISO_A2 === hoveredCountry.value
+              ? '#FF8C00'
+              : '#888888'
           )
-          .polygonSideColor((d: Feature) =>
-            d.properties.ISO_A2 === hoveredCountry.value ? '#E47200' : '#666666'
+          .polygonSideColor((d: any) =>
+            d.properties?.ISO_A2 === hoveredCountry.value
+              ? '#E47200'
+              : '#666666'
           )
-          .polygonAltitude((d: Feature) =>
-            d.properties.ISO_A2 === hoveredCountry.value ? 0.02 : 0.01
+          .polygonAltitude((d: any) =>
+            d.properties?.ISO_A2 === hoveredCountry.value ? 0.02 : 0.01
           )
       })
 
