@@ -1,30 +1,7 @@
 <template>
-  <div class="app-container">
-    <h1>Globe Visualization</h1>
-    <GlobeComponent />
-  </div>
+  <GlobeViz />
 </template>
 
-<script>
-import GlobeComponent from './components/GlobeComponent.vue'
-
-export default {
-  name: 'App',
-  components: {
-    GlobeComponent
-  }
-}
+<script setup lang="ts">
+import GlobeViz from './components/GlobeViz.vue'
 </script>
-
-<style>
-.app-container {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin: 0;
-  padding: 20px;
-}
-
-h1 {
-  color: #333;
-}
-</style>
