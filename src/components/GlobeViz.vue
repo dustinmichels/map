@@ -66,26 +66,19 @@ onMounted(async () => {
     const countries: GeoJSON = await response.json()
 
     // Initialize the globe with the container
-    // Fixed: Using the correct instantiation pattern for globe.gl
     globeInstance = new Globe(globeContainer.value)
       .width(window.innerWidth)
       .height(window.innerHeight)
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
-      .hexPolygonsData(countries.features)
-      .hexPolygonResolution(3)
-      .hexPolygonMargin(0.3)
-      .hexPolygonUseDots(true)
-      .hexPolygonColor(
-        () =>
-          `#${Math.round(Math.random() * Math.pow(2, 24))
-            .toString(16)
-            .padStart(6, '0')}`
-      )
-      .hexPolygonLabel(
+      .polygonsData(countries.features)
+      .polygonCapColor(() => '#888888') // Gray fill color for all countries
+      .polygonSideColor(() => '#666666') // Slightly darker gray for the sides
+      .polygonStrokeColor(() => '#FFFFFF') // White borders between countries
+      .polygonAltitude(0.01) // Small height to create a subtle 3D effect
+      .polygonLabel(
         ({ properties: d }: { properties: Properties }) => `
-        <b>${d.ADMIN} (${d.ISO_A2})</b> <br />
-        Population: <i>${d.POP_EST}</i>
-      `
+          <b>${d.ADMIN} (${d.ISO_A2})</b>
+        `
       )
 
     // Make the globe responsive
