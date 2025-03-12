@@ -27,11 +27,18 @@ let globeInstance: any = null
 const hoveredCountry = ref<string | null>(null)
 const isLoading = ref(true) // Add loading state
 
-// Create the resize handler outside the onMounted hook
+// Modified resize handler to adjust for the new container size
 const handleResize = () => {
   if (globeInstance) {
-    globeInstance.width(window.innerWidth)
-    globeInstance.height(window.innerHeight)
+    // Get the actual container size (accounting for header and footer)
+    const container = globeContainer.value
+    if (container) {
+      const width = container.clientWidth
+      const height = container.clientHeight
+
+      globeInstance.width(width)
+      globeInstance.height(height)
+    }
   }
 }
 
@@ -58,6 +65,10 @@ onMounted(async () => {
     // Dynamic import for Globe.gl (better for Vue/SSR)
     const Globe = (await import('globe.gl')).default
 
+    // Get container dimensions
+    const containerWidth = globeContainer.value.clientWidth
+    const containerHeight = globeContainer.value.clientHeight
+
     // Fetch the GeoJSON data
     const response = await fetch('/data/countries.geojson')
     if (!response.ok) {
@@ -70,8 +81,8 @@ onMounted(async () => {
 
     // Initialize the globe with the container
     globeInstance = new Globe(globeContainer.value)
-      .width(window.innerWidth)
-      .height(window.innerHeight)
+      .width(containerWidth)
+      .height(containerHeight)
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
       .polygonsData(countries.features)
       .polygonCapColor((d: any) => {
@@ -152,14 +163,14 @@ onMounted(async () => {
 <style scoped>
 .globe-wrapper {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   position: relative;
   overflow: hidden;
 }
 
 .globe-container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   position: relative;
   overflow: hidden;
   background-color: #000;
