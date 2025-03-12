@@ -96,18 +96,37 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import type { Ref } from 'vue'
 
-const searchTerm = ref('')
-const countries = ref([])
-const selectedCountry = ref(null)
-const confirmedCountry = ref(null)
-const showDropdown = ref(false)
-const loading = ref(false)
-const highlightedIndex = ref(-1)
-const showConfirmation = ref(false)
-const searchInput = ref(null)
+// Define TypeScript interfaces
+interface CountryProperties {
+  NAME: string
+  [key: string]: any // For other potential properties
+}
+
+interface Geometry {
+  type: string
+  coordinates: any[]
+}
+
+interface CountryFeature {
+  type: string
+  properties: CountryProperties
+  geometry: Geometry
+}
+
+// Type-safe refs
+const searchTerm: Ref<string> = ref('')
+const countries: Ref<CountryFeature[]> = ref([])
+const selectedCountry: Ref<CountryFeature | null> = ref(null)
+const confirmedCountry: Ref<CountryFeature | null> = ref(null)
+const showDropdown: Ref<boolean> = ref(false)
+const loading: Ref<boolean> = ref(false)
+const highlightedIndex: Ref<number> = ref(-1)
+const showConfirmation: Ref<boolean> = ref(false)
+const searchInput: Ref<HTMLInputElement | null> = ref(null)
 
 onMounted(async () => {
   try {
@@ -129,7 +148,7 @@ onMounted(async () => {
   }
 })
 
-const filteredCountries = computed(() => {
+const filteredCountries = computed((): CountryFeature[] => {
   if (!searchTerm.value) {
     highlightedIndex.value = -1
     return []
@@ -157,7 +176,7 @@ const filteredCountries = computed(() => {
   return results
 })
 
-function displayFormatted(name) {
+function displayFormatted(name: string): string {
   const searchTermLower = searchTerm.value.toLowerCase()
   const index = name.toLowerCase().indexOf(searchTermLower)
 
@@ -172,28 +191,28 @@ function displayFormatted(name) {
   return `${beforeMatch}<strong>${match}</strong>${afterMatch}`
 }
 
-const selectCountry = (country) => {
+const selectCountry = (country: CountryFeature): void => {
   selectedCountry.value = country
   searchTerm.value = country.properties.NAME
   showDropdown.value = false
 }
 
 // Down arrow key
-function highlightNext() {
+function highlightNext(): void {
   if (highlightedIndex.value < filteredCountries.value.length - 1) {
     highlightedIndex.value++
   }
 }
 
 // Up arrow key
-function highlightPrev() {
+function highlightPrev(): void {
   if (highlightedIndex.value > 0) {
     highlightedIndex.value--
   }
 }
 
 // Enter key
-function selectHighlighted() {
+function selectHighlighted(): void {
   if (
     highlightedIndex.value >= 0 &&
     highlightedIndex.value < filteredCountries.value.length
@@ -202,7 +221,7 @@ function selectHighlighted() {
   }
 }
 
-const confirmSelection = () => {
+const confirmSelection = (): void => {
   if (
     searchTerm.value &&
     (selectedCountry.value || filteredCountries.value.length > 0)
@@ -220,14 +239,19 @@ const confirmSelection = () => {
 }
 
 // Close dropdown when clicking outside
-const handleClickOutside = (event) => {
-  if (searchInput.value && !searchInput.value.contains(event.target)) {
+const handleClickOutside = (event: MouseEvent): void => {
+  if (searchInput.value && !searchInput.value.contains(event.target as Node)) {
     showDropdown.value = false
   }
 }
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+})
+
+// Clean up event listener when component is unmounted
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 
 // Reset the selected country when search term changes
