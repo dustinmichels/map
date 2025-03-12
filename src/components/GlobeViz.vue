@@ -93,7 +93,7 @@ onMounted(async () => {
       })
       .polygonLabel((obj: any) => {
         const d = obj.properties
-        return `<b>${d.ADMIN} (${d.ISO_A2})</b>`
+        return `<b>${d.ADMIN}</b>`
       })
       .onPolygonHover((polygon: any) => {
         // Update the hovered country and re-render the globe

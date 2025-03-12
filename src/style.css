@@ -9,9 +9,9 @@ body,
   overflow: hidden;
 }
 
-body {
+/* body {
   background-color: #000;
-}
+} */
 
 #app {
   display: flex;
