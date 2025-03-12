@@ -66,7 +66,8 @@ onMounted(async () => {
     const countries: GeoJSON = await response.json()
 
     // Initialize the globe with the container
-    globeInstance = Globe()(globeContainer.value)
+    // Fixed: Using the correct instantiation pattern for globe.gl
+    globeInstance = new Globe(globeContainer.value)
       .width(window.innerWidth)
       .height(window.innerHeight)
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
