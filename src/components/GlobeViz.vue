@@ -108,5 +108,8 @@ onMounted(async () => {
   position: relative;
   overflow: hidden;
   background-color: #000;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 </style>
