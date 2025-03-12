@@ -75,11 +75,10 @@ onMounted(async () => {
       .polygonSideColor(() => '#666666') // Slightly darker gray for the sides
       .polygonStrokeColor(() => '#FFFFFF') // White borders between countries
       .polygonAltitude(0.01) // Small height to create a subtle 3D effect
-      .polygonLabel(
-        ({ properties: d }: { properties: Properties }) => `
-          <b>${d.ADMIN} (${d.ISO_A2})</b>
-        `
-      )
+      .polygonLabel((obj: any) => {
+        const d = obj.properties
+        return `<b>${d.ADMIN} (${d.ISO_A2})</b>`
+      })
 
     // Make the globe responsive
     window.addEventListener('resize', handleResize)
