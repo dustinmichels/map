@@ -24,6 +24,7 @@ interface GeoJSON {
 
 const globeContainer = ref<HTMLElement | null>(null)
 let globeInstance: any = null
+const hoveredCountry = ref<string | null>(null)
 
 // Create the resize handler outside the onMounted hook
 const handleResize = () => {
@@ -71,13 +72,46 @@ onMounted(async () => {
       .height(window.innerHeight)
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
       .polygonsData(countries.features)
-      .polygonCapColor(() => '#888888') // Gray fill color for all countries
-      .polygonSideColor(() => '#666666') // Slightly darker gray for the sides
+      .polygonCapColor((d: Feature) => {
+        // Change color when hovered
+        return d.properties.ISO_A2 === hoveredCountry.value
+          ? '#FF8C00'
+          : '#888888'
+      })
+      .polygonSideColor((d: Feature) => {
+        // Change side color when hovered
+        return d.properties.ISO_A2 === hoveredCountry.value
+          ? '#E47200'
+          : '#666666'
+      })
       .polygonStrokeColor(() => '#FFFFFF') // White borders between countries
-      .polygonAltitude(0.01) // Small height to create a subtle 3D effect
+      .polygonAltitude((d: Feature) => {
+        // Slightly elevate the hovered country
+        return d.properties.ISO_A2 === hoveredCountry.value ? 0.02 : 0.01
+      })
       .polygonLabel((obj: any) => {
         const d = obj.properties
-        return `<b>${d.ADMIN} (${d.ISO_A2})</b>`
+        return `<b>${d.ADMIN}</b>`
+      })
+      .onPolygonHover((polygon: Feature | null) => {
+        // Update the hovered country and re-render the globe
+        if (polygon) {
+          hoveredCountry.value = polygon.properties.ISO_A2
+        } else {
+          hoveredCountry.value = null
+        }
+
+        // Force update polygon colors
+        globeInstance
+          .polygonCapColor((d: Feature) =>
+            d.properties.ISO_A2 === hoveredCountry.value ? '#FF8C00' : '#888888'
+          )
+          .polygonSideColor((d: Feature) =>
+            d.properties.ISO_A2 === hoveredCountry.value ? '#E47200' : '#666666'
+          )
+          .polygonAltitude((d: Feature) =>
+            d.properties.ISO_A2 === hoveredCountry.value ? 0.02 : 0.01
+          )
       })
 
     // Make the globe responsive
